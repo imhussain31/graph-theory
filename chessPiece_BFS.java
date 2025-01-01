@@ -1,8 +1,11 @@
+package BFS;
+
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Scanner;
 
 public class chessPiece_BFS {
+
 
     // Directions of movement based on the mobile piece's allowed moves
     private static final int[][] MOVES = {
@@ -51,9 +54,10 @@ public class chessPiece_BFS {
             int col = current[1];
             int distance = current[2];
 
+
             // Explore all possible moves
             for (int[] move : MOVES) {
-                int newRow = row + move[0];
+                int newRow = row+ move[0];
                 int newCol = col + move[1];
 
                 // Check if the new position is within bounds and not visited
@@ -73,7 +77,10 @@ public class chessPiece_BFS {
         // If we exhaust the queue without finding the target, it's unreachable
         return -1;
     }
+
 }
+
+
 /*      input
         2
         9 9
