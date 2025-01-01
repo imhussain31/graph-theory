@@ -1,0 +1,86 @@
+package BFS;
+
+import java.util.*;
+
+public class DoctorProbability {
+    public static void findDivisionAfterTime(int vertices, int source, int totalTime, List<List<Edge>> graph) {
+        Queue<int[]> queue = new LinkedList<>(); // Queue to track [current node, current time]
+        queue.add(new int[]{source, 0}); // Start from the source node at time 0
+
+        int currentDivision = source;
+        double maxProbability = 1.0; // Initially, the probability to stay at the source is 1.0
+
+        while (!queue.isEmpty()) {
+            int[] current = queue.poll();
+            int currentNode = current[0];
+            int currentTime = current[1];
+
+            if (currentTime == totalTime) {
+                // If the time is equal to the total time, we have reached the final division
+                currentDivision = currentNode;
+                break;
+            }
+
+            // Get neighbors and select the next division with the highest probability
+            List<Edge> neighbors = graph.get(currentNode);
+            if (neighbors.isEmpty()) {
+                // No outgoing edges: the doctor stays here for the rest of the time
+                currentDivision = currentNode;
+                break;
+            }
+
+            Edge bestEdge = null;
+            for (Edge neighbor : neighbors) {
+                if (bestEdge == null || neighbor.probability > bestEdge.probability) {
+                    bestEdge = neighbor;
+                }
+            }
+
+            if (bestEdge != null) {
+                queue.add(new int[]{bestEdge.destination, currentTime + 10}); // Move to the next division
+                currentDivision = bestEdge.destination;
+                maxProbability *= bestEdge.probability; // Update the probability
+            }
+        }
+
+        System.out.println(currentDivision + " " + String.format("%.6f", maxProbability));
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int testCases = sc.nextInt();
+
+        while (testCases-- > 0) {
+            int vertices = sc.nextInt(); // Number of nodes
+            int edges = sc.nextInt(); // Number of edges
+            int totalTime = sc.nextInt(); // Total time
+
+            List<List<Edge>> graph = new ArrayList<>();
+            for (int i = 0; i <= vertices; i++) {
+                graph.add(new ArrayList<>());
+            }
+
+            for (int i = 0; i < edges; i++) {
+                int start = sc.nextInt();
+                int end = sc.nextInt();
+                double probability = sc.nextDouble();
+                graph.get(start).add(new Edge(end, probability));
+            }
+
+            findDivisionAfterTime(vertices, 1, totalTime, graph);
+        }
+
+        sc.close();
+    }
+
+    static class Edge {
+        int destination;
+        double probability;
+
+        public Edge(int destination, double probability) {
+            this.destination = destination;
+            this.probability = probability;
+        }
+    }
+
+}
