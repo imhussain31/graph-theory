@@ -1,7 +1,11 @@
+package BFS;
+
 import java.util.LinkedList;
 import java.util.Queue;
 
 public class FrogJump {
+
+
     // Direction arrays for moving in the matrix
     private static final int[] ROW_DIR = {0, 0, -1, 1}; // left, right, up, down
     private static final int[] COL_DIR = {-1, 1, 0, 0};
@@ -14,68 +18,59 @@ public class FrogJump {
                 {1, 0, 1, 1}
         };
 
-        int[] source = {0, 0};
-        int[] destination = {3, 2};
+        int startRow = 0;
+        int startCol = 0;
+        int targetRow = 3;
+        int targetCol = 2;
 
-        int minCost = findMinCost(matrix, source, destination);
+
+        int minCost = findMinCost(matrix, startRow, startCol, targetRow, targetCol);
         System.out.println("Minimum cost: " + minCost);
     }
 
-    public static int findMinCost(int[][] matrix, int[] source, int[] destination) {
-        int rows = matrix.length;
-        int cols = matrix[0].length;
+    public static int findMinCost(int[][] matrix, int startRow, int startCol, int targetRow, int targetCol) {
+        int m = matrix.length;
+        int n = matrix[0].length;
 
         // Visited array to keep track of visited nodes
-        boolean[][] visited = new boolean[rows][cols];
+        boolean[][] visited = new boolean[m][n];
 
         // BFS queue: each element is {row, col, cost}
-        Queue<Node> queue = new LinkedList<>();
-        queue.add(new Node(source[0], source[1], 0));
-        visited[source[0]][source[1]] = true;
+        Queue<int[]> queue = new LinkedList<>();
+        queue.add(new int[]{startRow, startCol, 0});
+        visited[startRow][startCol] = true;
 
         while (!queue.isEmpty()) {
-            Node current = queue.poll();
+            int[] current = queue.poll();
+            int row = current[0];
+            int col = current[1];
+            int distance = current[2];
 
             // If we reach the destination, return the cost
-            if (current.row == destination[0] && current.col == destination[1]) {
-                return current.cost;
+            if (row == targetRow && col == targetCol) {
+                return distance;
             }
 
             // Explore all 4 possible directions
             for (int i = 0; i < 4; i++) {
-                int newRow = current.row + ROW_DIR[i];
-                int newCol = current.col + COL_DIR[i];
+                int newRow = row + ROW_DIR[i];
+                int newCol = col + COL_DIR[i];
 
-                if (isValidMove(matrix, newRow, newCol, visited)) {
+                if (newRow >= 0 && newRow < m && newCol >= 0 && newCol < n
+                        && matrix[newRow][newCol] == 1 && !visited[newRow][newCol]) {
                     // Horizontal move
                     if (i < 2) { // left or right (horizontal)
-                        queue.add(new Node(newRow, newCol, current.cost));
+                        queue.add(new int[]{newRow, newCol, distance});
                     } else { // Vertical move (up or down)
-                        queue.add(new Node(newRow, newCol, current.cost + 1));
+                        queue.add(new int[]{newRow, newCol, distance+1});
                     }
                     visited[newRow][newCol] = true;
                 }
             }
         }
-
         // If destination is unreachable
         return -1;
     }
-
-    // Utility function to check if the move is valid
-    private static boolean isValidMove(int[][] matrix, int row, int col, boolean[][] visited) {
-        return row >= 0 && row < matrix.length && col >= 0 && col < matrix[0].length
-                && matrix[row][col] == 1 && !visited[row][col];
-    }
 }
 
-// Node class to store the position and cost
-class Node {
-    int row, col, cost;
 
-    Node(int row, int col, int cost) {
-        this.row = row;
-        this.col = col;
-        this.cost = cost;
-    }
-}
