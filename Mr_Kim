@@ -1,0 +1,56 @@
+package BackTracking;
+
+import java.util.Scanner;
+
+public class Mr_Kim {
+    static int[] x = new int[20];
+    static int[] y = new int[20];
+    static int nCustomers;
+    static int minDis;
+
+    static int dist(int i, int j) {
+        return Math.abs(x[i] - x[j]) + Math.abs(y[i] - y[j]);
+    }
+
+    // Backtracking to find the optimal path
+    static void optimalPath(int currentLocation, boolean[] visited, int visitedCount, int currentDistance) {
+        if (nCustomers == visitedCount) {
+            // If number of nodes equal n, set value of answer
+            minDis = Math.min(minDis, currentDistance + dist(currentLocation, nCustomers + 1));
+        }
+        for (int i = 1; i <= nCustomers; i++) {
+            if (!visited[i]) {
+                visited[i] = true;
+                optimalPath(i, visited, visitedCount + 1, currentDistance + dist(currentLocation, i));  // DFS call
+                visited[i] = false;
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int tCases = sc.nextInt();  // Number of test cases
+        for (int t = 0; t < tCases; t++) {
+            minDis = Integer.MAX_VALUE;  // Set ans to max value
+            nCustomers = sc.nextInt();  // Number of customers
+
+
+            // Read destination and source x,y coordinates
+            x[nCustomers + 1] = sc.nextInt();
+            y[nCustomers + 1] = sc.nextInt();
+            x[0] = sc.nextInt();
+            y[0] = sc.nextInt();
+
+            // Input drop-off location coordinates
+            for (int i = 1; i <= nCustomers; i++) {
+                x[i] = sc.nextInt();
+                y[i] = sc.nextInt();
+            }
+
+            boolean[] visited = new boolean[nCustomers + 2];  // Visited array
+            optimalPath(0, visited, 0, 0);  // Start backtracking from the source
+            System.out.println("#" + (t + 1) + " " + minDis);  // Output the result for this test case
+        }
+        sc.close();
+    }
+}
